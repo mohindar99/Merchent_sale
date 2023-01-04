@@ -47,7 +47,7 @@ import "./IMerchent.sol";
       }
 
       // Listing the item to the smart contract
-      function item_listing(uint _item_no,uint _quantity,uint _price, address payable owner) public override onlyowner{
+      function item_listing(uint _item_no,uint _quantity,uint _price, address payable owner) external override onlyowner{
         
         require(items[_item_no].exists== false,"The item is listed already");
         require(_quantity>0,"Their must be atleast one item to list");
@@ -60,7 +60,7 @@ import "./IMerchent.sol";
        }
 
       // Buying the item from the smart contract 
-      function item_buy(uint _item_no , uint _quantity ) payable public override item_exists(_item_no,_quantity){
+      function item_buy(uint _item_no , uint _quantity ) payable external override item_exists(_item_no,_quantity){
          
         uint total_amount = items[_item_no].price * _quantity ;
 
@@ -79,7 +79,7 @@ import "./IMerchent.sol";
        } 
       
       // Claiming the item after the gamble had been done 
-      function bid_winners(uint _item_no , address payable winner) public override{
+      function bid_winners(uint _item_no , address payable winner) external override{
 
         require(items[_item_no].received_amount>=items[_item_no].price,"Enough contribution was not made");
 
@@ -93,7 +93,7 @@ import "./IMerchent.sol";
        }
       
       // Contributing the money to the contract for starting the game 
-      function bid_start(uint _item_no ) payable public override item_exists(_item_no,1){
+      function bid_start(uint _item_no ) payable external override item_exists(_item_no,1){
         uint avg_service_fee = service_fee/2;
         uint req = (items[_item_no].price*(50+avg_service_fee))/100;
         
@@ -108,7 +108,7 @@ import "./IMerchent.sol";
        } 
       
       // Used to withdraw the required money
-      function withdraw_funds() public override onlyowner{
+      function withdraw_funds() external override onlyowner{
           admin.transfer(address(this).balance);
        }
 
