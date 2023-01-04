@@ -1,7 +1,7 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.6;
 
-contract IMerchent  {
+interface IMerchent {
     /*
       Emitted when owner of the NFT had been changed
     */
@@ -15,38 +15,28 @@ contract IMerchent  {
        * Emits {item_logs} event
 
      */
-      function item_listing(uint _item_no,uint _quantity,uint _price, address payable owner) public virtual{
-         
-       }
+      function item_listing(uint _item_no,uint _quantity,uint _price, address payable owner) external ;
        /*
        * Buyer address can not be zero address
        * TotalAmount of the items must be greater or equal to the price of the item
        * Emits {item_logs} event  
        */
-      function item_buy(uint _item_no , uint _quantity ) payable public virtual{
-         
-       } 
+      function item_buy(uint _item_no , uint _quantity ) payable external ;
       /*
       * Amount received must be greater than price of the item to claim
       * Emits {item_logs} event
       */
-      function bid_winners(uint _item_no , address payable winner) public virtual{
-     
-       }
+      function bid_winners(uint _item_no , address payable winner) external ;
      /*
      * Address sender cannot be the zero address
      * Value sent must be greater than the price of the item
      * Used for the participants to start the game by contributing the half of the price of item
      */
-      function bid_start(uint _item_no ) payable public virtual{
-   
-       } 
+      function bid_start(uint _item_no ) payable external ;
     /*
     * Only admin should withdraw the funds
     * Admin can withdraw the funds from the contract which is 2% in each bidding transaction
     */
-      function withdraw_funds() public virtual{
-        
-       }
+      function withdraw_funds() external ;
 
 }
