@@ -18,9 +18,9 @@ describe("Platorm Merchent" ,function () {
    });
 
     describe("deployment",function(){
-// //      it("should go to the right owner", async function(){
-// //         expect(await merchent_contract.admin()).to.equal(admin.address);
-// //      });
+     it("should go to the right owner", async function(){
+        expect(await merchent_contract.admin()).to.equal(owner.address);
+     });
 
         it("checking service fee ",async function(){
             const service = await merchent_contract.service_fee();
@@ -37,5 +37,40 @@ describe("Platorm Merchent" ,function () {
         });
     })
 
-})
+    describe("Called by wrong owner", function () { 
+        it("calling only owner functions", async function () { 
+            await expect(merchent_contract.connect(addr1).item_listing(1, 2, 12, addr2.address)).to.be.revertedWith("");
+        })
+    })
+
+    describe("buying the item and checking the owner", function () { 
+        it("buy item", async function () { 
+            await merchent_contract.item_listing(1, 2, 2, owner.address);
+            await merchent_contract.connect(addr1).item_buy(1, 2, { value: ethers.utils.parseEther("4") });
+        })
+
+        // it("insufficient amount", async function () { 
+        //     await merchent_contract.item_listing(2, 2, 2, owner.address);
+        //     await expect(merchent_contract.connect(addr2).item_buy(2, 2, { value: ethers.utils.formatEther(3)})).to.be.revertedWith("The amount is insufficient ");
+        //})
+    })
+
+    describe("checking the listing ", function () { 
+        it("listing with zero quantity", async function () { 
+            await expect(merchent_contract.item_listing(1, 0, 2, owner.address)).to.be.revertedWith("Their must be atleast one item to list");
+        })
+        it("double listing", async function () {
+            await merchent_contract.item_listing(1, 1, 2, owner.address);
+            await expect(merchent_contract.item_listing(1, 3, 2, owner.address)).to.be.revertedWith("The item is listed already");  
+        })
+        it("bidding", async function () { 
+            await expect(merchent_contract.bid_start(1,{value: ethers.utils.parseEther("2")})).to.be.revertedWith("Item does not exists");
+        })
+
+        it("listing price to zero", async function () { 
+            await expect(merchent_contract.item_listing(1, 2, 0, owner.address)).to.be.revertedWith("Their must be a minimum price of the item");
+        })
+        })    
+       
+    })
 
