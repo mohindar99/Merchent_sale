@@ -40,7 +40,11 @@ import "./IMerchent.sol";
         require(items[_item_no].quantity>=_quantity,"Their is not enough quantity");
         _;
       }
-      
+      //returns the owner of the item
+      function owner1(uint no) public view returns(address){
+        return items[no].item_owner;
+        }
+
       // Used to change the admin platform fee which can be only set by admin
       function Fee_modifier(uint fee) external onlyowner{
          service_fee=fee;
@@ -68,7 +72,7 @@ import "./IMerchent.sol";
         require(msg.value >= total_amount,"The amount is insufficient ");
 
         items[_item_no].item_owner.transfer(msg.value);
-
+        items[_item_no].item_owner = payable(msg.sender);
         items[_item_no].quantity -= _quantity;
 
         emit item_logs(_item_no, _quantity,total_amount , msg.sender);   
@@ -86,7 +90,7 @@ import "./IMerchent.sol";
          items[_item_no].item_owner.transfer(items[_item_no].price);
          
          emit item_logs(_item_no,1,items[_item_no].price,winner);
-           
+           items[_item_no].item_owner=payable(winner);
            if(items[_item_no].quantity==0){
             items[_item_no].exists=false;
         }
@@ -111,7 +115,7 @@ import "./IMerchent.sol";
       function withdraw_funds() external override onlyowner{
           admin.transfer(address(this).balance);
        }
-
-
-
+       function contract_bal() external view onlyowner returns(uint){
+           return address(this).balance;
+       }
 }
