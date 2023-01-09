@@ -17,7 +17,9 @@ import "./IMerchent.sol";
              uint price;
              bool exists;
              uint received_amount;
-        }
+             address payable user1;
+             address user2;
+           }
 
         // mapping of the unique item_no to the item details
          mapping (uint => item ) public items;
@@ -58,7 +60,7 @@ import "./IMerchent.sol";
         require(_price>0,"Their must be a minimum price of the item");
 
         items[_item_no].exists=true;
-        items[_item_no]= item(_item_no, _quantity,owner,_price,items[_item_no].exists,0);
+        items[_item_no]= item(_item_no, _quantity,owner,_price,items[_item_no].exists,0,payable(address(0)),address(0));
 
         emit item_logs(_item_no,_quantity,_price,owner);  
        }
@@ -103,13 +105,31 @@ import "./IMerchent.sol";
         
         require(msg.sender!=address(0),"user doesn't exists");
         require(msg.value>=req,"Amount insufficient");
+
+        if(items[_item_no].received_amount==0){
+          items[_item_no].user1=payable(msg.sender);
+        }  
+        else if(items[_item_no].received_amount>=req){
+          items[_item_no].user2 = msg.sender;
+        }
         items[_item_no].received_amount += msg.value;
-       
        //Used if item is only 1 item and 2 pairs are trying to start the game at the same time .  
         if(items[_item_no].received_amount>=items[_item_no].price){
             items[_item_no].quantity -= 1;
         }
        } 
+      // Getting the funds back incase of 2nd user not send the money to contract
+       function return_funds(uint item_no) external override item_exists(item_no,1) {
+
+        require(msg.sender!=address(0),"user doesn't exists");
+
+        uint avg_service_fee = service_fee/2;
+        uint req = (items[item_no].price*(50+avg_service_fee))/100;
+
+        require(msg.sender==items[item_no].user1,"Not the user who contributed money");
+        
+        payable(msg.sender).transfer(req);
+       }
       
       // Used to withdraw the required money
       function withdraw_funds() external override onlyowner{

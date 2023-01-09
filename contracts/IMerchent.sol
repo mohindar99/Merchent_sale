@@ -26,6 +26,13 @@ interface IMerchent {
       * Amount received must be greater than price of the item to claim
       * Emits {item_logs} event
       */
+      function return_funds(uint item_no) external ;
+      /*
+        * Only the 1st user can withdraw the funds from the contract
+        * msg.sender can not be the address(0)
+        * The required amount taken during the bidding had been sent to the user
+      */
+      
       function bid_winners(uint _item_no , address payable winner) external ;
      /*
      * Address sender cannot be the zero address
