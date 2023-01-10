@@ -68,7 +68,7 @@ import "./IMerchent.sol";
       // Buying the item from the smart contract 
       function item_buy(uint _item_no , uint _quantity ) payable external override item_exists(_item_no,_quantity){
          
-        uint total_amount = items[_item_no].price * _quantity ;
+        uint total_amount = (items[_item_no].price * _quantity)+service_fee ;
 
         require(msg.sender!= address(0),"The address of buyer is invalid");
         require(msg.value >= total_amount,"The amount is insufficient ");
