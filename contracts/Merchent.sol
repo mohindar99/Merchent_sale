@@ -129,6 +129,7 @@ import "./IMerchent.sol";
         require(msg.sender==items[item_no].user1,"Not the user who contributed money");
         
         payable(msg.sender).transfer(req);
+        items[item_no].user1=payable(address(0));
        }
       
       // Used to withdraw the required money
