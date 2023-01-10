@@ -88,6 +88,7 @@ import "./IMerchent.sol";
       function bid_winners(uint _item_no , address payable winner) external override{
 
         require(items[_item_no].received_amount>=items[_item_no].price,"Enough contribution was not made");
+        assert(winner == items[_item_no].user1|| winner ==items[_item_no].user2);
 
          items[_item_no].item_owner.transfer(items[_item_no].price);
          
@@ -100,11 +101,12 @@ import "./IMerchent.sol";
       
       // Contributing the money to the contract for starting the game 
       function bid_start(uint _item_no ) payable external override item_exists(_item_no,1){
-        uint avg_service_fee = service_fee/2;
-        uint req = (items[_item_no].price*(50+avg_service_fee))/100;
+
+        uint req = ((items[_item_no].price*51)/100)+service_fee;
         
         require(msg.sender!=address(0),"user doesn't exists");
         require(msg.value>=req,"Amount insufficient");
+
 
         if(items[_item_no].received_amount==0){
           items[_item_no].user1=payable(msg.sender);
@@ -114,7 +116,7 @@ import "./IMerchent.sol";
         }
         items[_item_no].received_amount += msg.value;
        //Used if item is only 1 item and 2 pairs are trying to start the game at the same time .  
-        if(items[_item_no].received_amount>=items[_item_no].price){
+        if(items[_item_no].received_amount>items[_item_no].price){
             items[_item_no].quantity -= 1;
         }
        } 
@@ -122,13 +124,11 @@ import "./IMerchent.sol";
        function return_funds(uint item_no) external override item_exists(item_no,1) {
 
         require(msg.sender!=address(0),"user doesn't exists");
-
-        uint avg_service_fee = service_fee/2;
-        uint req = (items[item_no].price*(50+avg_service_fee))/100;
-
+        require(items[item_no].received_amount<items[item_no].price,"Enough contribution was made and winner is decided");
+        
         require(msg.sender==items[item_no].user1,"Not the user who contributed money");
         
-        payable(msg.sender).transfer(req);
+        payable(msg.sender).transfer(items[item_no].received_amount);
         items[item_no].user1=payable(address(0));
        }
       
@@ -136,6 +136,7 @@ import "./IMerchent.sol";
       function withdraw_funds() external override onlyowner{
           admin.transfer(address(this).balance);
        }
+       
        function contract_bal() external view onlyowner returns(uint){
            return address(this).balance;
        }
